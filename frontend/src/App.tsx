@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import WebSocketTest from './components/Tetris';
 
@@ -7,8 +6,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Tetris</h1>
-        < WebSocketTest/>
       </header>
+        < WebSocketTest/>
     </div>
   );
 }
