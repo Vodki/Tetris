@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 const useWebSocket = (url: string) => {
   const [grid, setGrid] = useState<number[][]>([]);
+  const [score, setScore] = useState<number>();
+  const [gameOn, setGameOn] = useState<boolean>(false);
+  const [level, setLevel] = useState<number>();
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   // Initialize WebSocket connection
@@ -12,10 +15,13 @@ const useWebSocket = (url: string) => {
     ws.onmessage = (event) => {
       try {
         console.log(event.data)
-        const message: { type: string; data: string } = JSON.parse(event.data);
+        const message: { type: string; data: string; score: number; level:number; gameOn: boolean } = JSON.parse(event.data);
         
         if (message.type === 'GameUpdate') {
           setGrid(JSON.parse(message.data));
+          setScore(message.score)
+          setGameOn(message.gameOn)
+          setLevel(message.level)
         }
       } catch (error) {
         console.error('Error handling message:', error);
@@ -34,7 +40,7 @@ const useWebSocket = (url: string) => {
     }
   }, [socket]);
 
-  return { grid, sendMessage };
+  return { grid, sendMessage, score, level, gameOn };
 };
 
 export default useWebSocket;

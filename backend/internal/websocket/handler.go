@@ -38,8 +38,8 @@ func WebsocketHandler(hub *Hub) gin.HandlerFunc {
 			client.Send <- msg
 		}()
 
-		eng := game.NewEngine(client.Send)
-		client.GameChan = eng.CommandChan
+		eng := game.NewEngine(client.GameSend)
+		client.GameRecv = eng.CommandChan
 
 		go eng.Start()
 		go client.WritePump()

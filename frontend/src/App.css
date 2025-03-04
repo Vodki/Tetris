@@ -59,7 +59,37 @@
   box-sizing: border-box;
 }
 
-.cell.filled {
-  background-color: #4CAF50;
+.color-1 {
+  background-color: #00ffff; /* I-block - Cyan */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-2 {
+  background-color: #0000ff; /* J-block - Blue */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-3 {
+  background-color: #ff8000; /* L-block - Orange */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-4 {
+  background-color: #ffff00; /* O-block - Yellow */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-5 {
+  background-color: #00ff00; /* S-block - Green */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-6 {
+  background-color: #800080; /* T-block - Purple */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-7 {
+  background-color: #ff0000; /* Z-block - Red */
   border: 1px solid rgba(255, 255, 255, 0.1);
 }

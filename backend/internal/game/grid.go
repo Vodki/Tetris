@@ -29,15 +29,15 @@ func (b *Board) GridCopy() [][]int {
 	return copy
 }
 
-func (b *Board) fillBoard(X, Y int) {
+func (b *Board) fillBoard(X, Y, color int) {
 	if X >= 0 && Y >= 0 {
-		b.Grid[Y][X] += 1
+		b.Grid[Y][X] = color
 	}
 }
 
 func (b *Board) lineIsFull(Y int) bool {
 	for _, n := range b.Grid[Y] {
-		if n != 1 {
+		if n == 0 {
 			return false
 		}
 	}
@@ -70,15 +70,4 @@ func (b *Board) clearLines(lines []int) {
 			copy(b.Grid[i], b.Grid[i-lenLines])
 		}
 	}
-}
-
-func (b *Board) isInvalid() bool {
-	for i := range b.Grid {
-		for _, n := range b.Grid[i] {
-			if n != 0 && n != 1 {
-				return true
-			}
-		}
-	}
-	return false
 }

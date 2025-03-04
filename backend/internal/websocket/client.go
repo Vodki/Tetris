@@ -12,32 +12,46 @@ import (
 
 type Client struct {
 	conn     *websocket.Conn
+	GameSend chan msg.GameMessage
 	Send     chan msg.WSMessage
 	id       uuid.UUID
-	GameChan chan msg.WSMessage
+	GameRecv chan msg.WSMessage
 }
 
 func NewClient(conn *websocket.Conn) *Client {
 	return &Client{
-		conn: conn,
-		Send: make(chan msg.WSMessage),
-		id:   uuid.New(),
+		conn:     conn,
+		GameSend: make(chan msg.GameMessage),
+		Send:     make(chan msg.WSMessage),
+		id:       uuid.New(),
 	}
 }
 
 func (c *Client) WritePump() {
 	defer c.conn.Close()
 	for {
-		message, ok := <-c.Send
-		if !ok {
-			c.conn.WriteMessage(websocket.CloseMessage, []byte{})
-			return
+		select {
+		case message, ok := <-c.Send:
+			if !ok {
+				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				return
+			}
+			toSend, err := json.Marshal(message)
+			if err != nil {
+				log.Print("Error marshaling JSON:", err)
+			}
+			c.conn.WriteMessage(websocket.TextMessage, toSend)
+		case message, ok := <-c.GameSend:
+			if !ok {
+				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				return
+			}
+			toSend, err := json.Marshal(message)
+			if err != nil {
+				log.Print("Error marshaling JSON:", err)
+			}
+			c.conn.WriteMessage(websocket.TextMessage, toSend)
 		}
-		toSend, err := json.Marshal(message)
-		if err != nil {
-			log.Print("Error marshaling JSON:", err)
-		}
-		c.conn.WriteMessage(websocket.TextMessage, toSend)
 	}
 }
 
@@ -65,6 +79,6 @@ func (c *Client) handleMessage(msg msg.WSMessage) {
 	msgType := string(msg.Type)
 	switch msgType {
 	case "game":
-		c.GameChan <- msg
+		c.GameRecv <- msg
 	}
 }

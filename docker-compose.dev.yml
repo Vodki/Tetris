@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: development # Use dev stage
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - ./backend/.air.toml:/app/.air.toml
+    environment:
+      - PORT=8080
+      - GIN_MODE=debug
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      target: development # Use dev stage
+    ports:
+      - "3000:3000" # Dev server port
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

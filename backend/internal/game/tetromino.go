@@ -15,6 +15,7 @@ type Tetromino struct {
 	RotationIndex int
 	Position      Point
 	ID            string
+	Color         int
 }
 
 func (t *Tetromino) GetCurrentShape() []Point {
@@ -56,7 +57,8 @@ var (
 			{{-1, 0}, {0, 0}, {1, 0}, {2, 0}},
 		},
 		RotationIndex: 0,
-		Position:      Point{X: 4, Y: 1}, // starting position (adjust as needed)
+		Position:      Point{X: 4, Y: 1},
+		Color:         1,
 	}
 
 	// J Tetromino
@@ -74,6 +76,7 @@ var (
 		},
 		RotationIndex: 0,
 		Position:      Point{X: 4, Y: 1},
+		Color:         2,
 	}
 
 	// L Tetromino
@@ -91,6 +94,7 @@ var (
 		},
 		RotationIndex: 0,
 		Position:      Point{X: 4, Y: 1},
+		Color:         3,
 	}
 
 	// O Tetromino (Square) – Only one rotation needed since it's symmetric.
@@ -101,6 +105,7 @@ var (
 		},
 		RotationIndex: 0,
 		Position:      Point{X: 4, Y: 0},
+		Color:         4,
 	}
 
 	// S Tetromino
@@ -114,6 +119,7 @@ var (
 		},
 		RotationIndex: 0,
 		Position:      Point{X: 4, Y: 0},
+		Color:         5,
 	}
 
 	// T Tetromino
@@ -131,6 +137,7 @@ var (
 		},
 		RotationIndex: 0,
 		Position:      Point{X: 4, Y: 0},
+		Color:         6,
 	}
 
 	// Z Tetromino
@@ -144,5 +151,6 @@ var (
 		},
 		RotationIndex: 0,
 		Position:      Point{X: 4, Y: 0},
+		Color:         7,
 	}
 )

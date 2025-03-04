@@ -24,11 +24,11 @@ type Engine struct {
 	Score        int
 	level        int
 	clearedLines int
-	clientChan   chan msg.WSMessage
+	clientChan   chan msg.GameMessage
 	CommandChan  chan msg.WSMessage
 }
 
-func NewEngine(clientChan chan msg.WSMessage) *Engine {
+func NewEngine(clientChan chan msg.GameMessage) *Engine {
 	return &Engine{
 		Board:        NewBoard(),
 		Current:      NewRandomTetromino(),
@@ -90,19 +90,41 @@ func (g *Engine) Start() {
 
 }
 
-func (g *Engine) sendGrid() {
-	tmpGrid := g.Board.GridCopy()
-	t := g.Current
+func (g *Engine) AddPreview(tmpGrid [][]int, t *Tetromino) [][]int {
+	count := 0
+	for g.canMoveDown() {
+		g.Current.Position.Y++
+		count++
+	}
 
 	for _, p := range t.GetCurrentShape() {
 		x := t.Position.X + p.X
 		y := t.Position.Y + p.Y
 		if x >= 0 && y >= 0 {
-			tmpGrid[y][x] = 1
+			tmpGrid[y][x] = 9
+		}
+	}
+
+	g.Current.Position.Y -= count
+
+	return tmpGrid
+}
+
+func (g *Engine) sendGrid() {
+	tmpGrid := g.Board.GridCopy()
+	t := g.Current
+
+	tmpGrid = g.AddPreview(tmpGrid, t)
+
+	for _, p := range t.GetCurrentShape() {
+		x := t.Position.X + p.X
+		y := t.Position.Y + p.Y
+		if x >= 0 && y >= 0 {
+			tmpGrid[y][x] = t.Color
 		}
 	}
 	gridJson, _ := json.Marshal(tmpGrid)
-	msg := msg.NewMessage("GameUpdate", string(gridJson))
+	msg := msg.NewGameMessage("GameUpdate", string(gridJson), g.Score, g.level, !g.GameOver)
 	g.clientChan <- *msg
 }
 
@@ -132,8 +154,9 @@ func (g *Engine) tick() {
 		if (n+g.clearedLines)/10 > g.clearedLines/10 {
 			g.level++
 		}
+		g.clearedLines += n
 		g.spawnNewTetromino()
-		if !g.isValidPosition(g.Current) || g.Board.isInvalid() {
+		if !g.isValidPosition(g.Current) {
 			g.GameOver = true
 		}
 	}
@@ -150,7 +173,7 @@ func (g *Engine) lockCurrentTetromino() {
 	for _, p := range t.GetCurrentShape() {
 		x := t.Position.X + p.X
 		y := t.Position.Y + p.Y
-		g.Board.fillBoard(x, y)
+		g.Board.fillBoard(x, y, t.Color)
 	}
 }
 
@@ -196,8 +219,10 @@ func (g *Engine) rotateCurrentTetromino() {
 }
 
 func (g *Engine) hardDrop() {
+	count := 0
 	for g.canMoveDown() {
 		g.Current.Position.Y++
+		count++
 	}
 	g.lockCurrentTetromino()
 	n := g.Board.clearFullLines()
@@ -205,11 +230,13 @@ func (g *Engine) hardDrop() {
 	if (n+g.clearedLines)/10 > g.clearedLines/10 {
 		g.level++
 	}
+	g.clearedLines += n
 	g.spawnNewTetromino()
-	if !g.isValidPosition(g.Current) || g.Board.isInvalid() {
+	if !g.isValidPosition(g.Current) {
 		g.GameOver = true
 	}
 	g.sendGrid()
+	g.Score += count * g.level
 }
 
 func (g *Engine) moveLeft() {
@@ -240,11 +267,12 @@ func (g *Engine) moveDown() {
 		if (n+g.clearedLines)/10 > g.clearedLines/10 {
 			g.level++
 		}
-
+		g.clearedLines += n
 		g.spawnNewTetromino()
-		if !g.isValidPosition(g.Current) || g.Board.isInvalid() {
+		if !g.isValidPosition(g.Current) {
 			g.GameOver = true
 		}
 	}
+	g.Score += g.level
 	g.sendGrid()
 }

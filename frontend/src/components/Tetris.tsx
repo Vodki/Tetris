@@ -9,7 +9,7 @@ const Grid: React.FC<{ grid: number[][] }> = React.memo(({ grid }) => (
         {row.map((cell, cellIndex) => (
           <div
             key={cellIndex}
-            className={`cell ${cell ? 'filled' : ''}`}
+            className={`cell ${cell !== 0 ? `color-${cell}` : ''}`}
           />
         ))}
       </div>
@@ -19,12 +19,13 @@ const Grid: React.FC<{ grid: number[][] }> = React.memo(({ grid }) => (
 
 const Tetris: React.FC = () => {
   const defaultGrid = createEmptyGrid();
-  const { grid, sendMessage } = useWebSocket("ws://localhost:8080/ws");
+  const { grid, sendMessage, score, level, gameOn } = useWebSocket("ws://localhost:8080/ws");
   
   // Always show current grid or default if empty
   const currentGrid = grid && grid.length > 0 ? grid : defaultGrid;
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (!gameOn) return;
     switch (event.key) {
       case "ArrowUp":
         sendMessage("game", "Rotate");
@@ -49,7 +50,7 @@ const Tetris: React.FC = () => {
       default:
         break;
     }
-  }, [sendMessage]);
+  }, [sendMessage, gameOn]);
 
   // Add keyboard event listener
   useEffect(() => {
@@ -65,6 +66,8 @@ const Tetris: React.FC = () => {
 
   return (
     <div>
+      level : {level}
+      score : {score}
       <button onClick={handleStart}>Start Game</button>
       <Grid grid={currentGrid} />
     </div>
