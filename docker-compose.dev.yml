@@ -13,6 +13,9 @@ services:
     environment:
       - PORT=8080
       - GIN_MODE=debug
+      - MONGODB_URI=mongodb://mongo:27017  # Use Docker service name
+      - MONGODB_DB=Tetris_dev
+
     networks:
       - app-network
 
@@ -30,6 +33,33 @@ services:
     networks:
       - app-network
 
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db  # Persist data between container restarts
+    networks:
+      - app-network
+
+  # Optional GUI for MongoDB (access at http://localhost:8081)
+  mongo-express:
+    image: mongo-express:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=admin  # Optional auth
+      - ME_CONFIG_BASICAUTH_PASSWORD=secret
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mongodb_data:

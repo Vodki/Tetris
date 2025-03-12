@@ -143,7 +143,6 @@ func (g *Engine) handleCommand(msg msg.WSMessage) {
 	}
 }
 
-// tick handles each game update.
 func (g *Engine) tick() {
 	if g.canMoveDown() {
 		g.Current.Position.Y++

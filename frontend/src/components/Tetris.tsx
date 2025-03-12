@@ -61,14 +61,23 @@ const Tetris: React.FC = () => {
   }, [handleKeyDown]);
 
   const handleStart = useCallback(() => {
-    sendMessage("game", "start");
-  }, [sendMessage]);
+    if (!gameOn)
+      sendMessage("game", "start");
+  }, [sendMessage, gameOn]);
 
   return (
-    <div>
-      level : {level}
-      score : {score}
-      <button onClick={handleStart}>Start Game</button>
+    <div style={{
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-around",
+      alignItems: "center",
+      columnGap: "3rem"
+    }}>
+      <div>
+        <p>level : {level}</p>
+        <p>score : {score}</p>
+        <button onClick={handleStart}>Start Game / Replay</button>
+      </div>
       <Grid grid={currentGrid} />
     </div>
   );
