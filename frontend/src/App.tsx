@@ -3,7 +3,7 @@ import Tetris from './components/Tetris';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App w-full h-full">
       <header className="App-header">
         <h1 className='bg-red-500'>Tetris</h1>
       </header>

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import useWebSocket from "../hooks/useWebSocket";
 import { createEmptyGrid } from "../utils/gridUtils";
+import { Button } from "./ui/button";
 
 const Grid: React.FC<{ grid: number[][] }> = React.memo(({ grid }) => (
   <div className="grid">
@@ -76,7 +77,7 @@ const Tetris: React.FC = () => {
       <div>
         <p>level : {level}</p>
         <p>score : {score}</p>
-        <button onClick={handleStart}>Start Game / Replay</button>
+        <Button onClick={handleStart}>Start Game / Replay</Button>
       </div>
       <Grid grid={currentGrid} />
     </div>
