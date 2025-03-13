@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,5 +10,8 @@ export default defineConfig({
     hmr: {
       clientPort: 3000, // Important for Docker HMR
     },
-  }
+  },
+  plugins: [
+    tailwindcss(),
+  ],
 })
