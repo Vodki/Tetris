@@ -80,5 +80,7 @@ func (c *Client) handleMessage(msg msg.WSMessage) {
 	switch msgType {
 	case "game":
 		c.GameRecv <- msg
+	case "start":
+		c.GameRecv <- msg
 	}
 }

@@ -34,7 +34,7 @@ const useWebSocket = (url: string) => {
   }, [url]);
 
   // Send message helper
-  const sendMessage = useCallback((type: string, data: string) => {
+  const sendMessage = useCallback((type: string, data: string ) => {
     if (socket?.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type, data }));
     }

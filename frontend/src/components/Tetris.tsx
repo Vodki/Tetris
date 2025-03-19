@@ -1,7 +1,9 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useWebSocket from "../hooks/useWebSocket";
 import { createEmptyGrid } from "../utils/gridUtils";
 import { Button } from "./ui/button";
+import { uniqueNamesGenerator, adjectives, colors, animals } from "unique-names-generator";
+import { Input } from "./ui/input";
 
 const Grid: React.FC<{ grid: number[][] }> = React.memo(({ grid }) => (
   <div className="grid">
@@ -18,10 +20,23 @@ const Grid: React.FC<{ grid: number[][] }> = React.memo(({ grid }) => (
   </div>
 ));
 
+
 const Tetris: React.FC = () => {
   const defaultGrid = createEmptyGrid();
   const { grid, sendMessage, score, level, gameOn } = useWebSocket("ws://localhost:8080/ws");
+  const [username, setUsername] = useState<string>("")
   
+  const handleGeneratePseudo = () => {
+    const generatedName = uniqueNamesGenerator({
+      dictionaries: [adjectives, colors, animals],
+      separator: "_",
+      style: "capital",
+      length: 3
+    }) + Math.floor(Math.random() * 90 + 10);
+  
+    setUsername(generatedName);
+  };
+
   // Always show current grid or default if empty
   const currentGrid = grid && grid.length > 0 ? grid : defaultGrid;
 
@@ -63,8 +78,8 @@ const Tetris: React.FC = () => {
 
   const handleStart = useCallback(() => {
     if (!gameOn)
-      sendMessage("game", "start");
-  }, [sendMessage, gameOn]);
+      sendMessage("start", username);
+  }, [sendMessage, gameOn, username]);
 
   return (
     <div style={{
@@ -75,9 +90,23 @@ const Tetris: React.FC = () => {
       columnGap: "3rem"
     }}>
       <div>
+        <Input
+          placeholder='Username'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          />
+        <Button
+          onClick={handleGeneratePseudo}>
+          Create a random Username
+        </Button>
         <p>level : {level}</p>
         <p>score : {score}</p>
-        <Button onClick={handleStart}>Start Game / Replay</Button>
+        <Button
+          className='disabled:opacity-50 disabled:cursor-not-allowed'
+          disabled={!username.trim() || gameOn}
+          onClick={handleStart}>
+          Start Game / Replay
+        </Button>
       </div>
       <Grid grid={currentGrid} />
     </div>

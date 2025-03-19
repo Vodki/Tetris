@@ -3,7 +3,9 @@ package game
 import (
 	"Tetris/internal/msg"
 	"encoding/json"
+	"fmt"
 	"log"
+	"os"
 	"time"
 )
 
@@ -26,6 +28,7 @@ type Engine struct {
 	clearedLines int
 	clientChan   chan msg.GameMessage
 	CommandChan  chan msg.WSMessage
+	username     string
 }
 
 func NewEngine(clientChan chan msg.GameMessage) *Engine {
@@ -63,6 +66,7 @@ func (g *Engine) reset() {
 	g.Board = NewBoard()
 	g.GameOver = false
 	g.Score = 0
+	g.username = ""
 }
 
 func (g *Engine) Start() {
@@ -70,8 +74,9 @@ func (g *Engine) Start() {
 		start := false
 		for !start {
 			msg := <-g.CommandChan
-			if msg.Data == "start" {
+			if msg.Type == "start" {
 				start = true
+				g.username = msg.Data
 			}
 		}
 		g.Ticker = time.NewTicker(500 * time.Millisecond)
@@ -84,6 +89,8 @@ func (g *Engine) Start() {
 			}
 		}
 		g.Ticker.Stop()
+		fmt.Fprintf(os.Stderr, "username = %v", g.username)
+		// TODO HERE : Implement the leaderboard system
 		g.reset()
 		log.Print("GAME OVER")
 	}

@@ -17,9 +17,11 @@
     "lucide-react": "^0.479.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.14",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "unique-names-generator": "^4.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
