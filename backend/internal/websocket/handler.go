@@ -41,11 +41,11 @@ func WebsocketHandler(hub *Hub) gin.HandlerFunc {
 			client.Send <- msg
 		}()
 
-		scores, err := leaderboard.GetScores()
+		leaderboard, err := leaderboard.GetLeaderboard()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error while fetching leaderboard")
 		} else {
-			fmt.Printf("score = %v", scores)
+			fmt.Printf("leaderboard = %v", leaderboard)
 		}
 
 		eng := game.NewEngine(client.GameSend)

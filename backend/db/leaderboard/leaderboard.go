@@ -3,76 +3,87 @@ package leaderboard
 import (
 	"Tetris/db"
 	"context"
-	"fmt"
-	"os"
+	"sort"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type leaderboardEntry struct {
-	ID    string `bson:"_id,omitempty" json:"id"`
-	Name  string `bson:"name" json:"name"`
-	Score int    `bson:"score" json:"score"`
+	Username string `bson:"username" json:"username"`
+	Score    int    `bson:"score" json:"score"`
 }
 
-func GetScores() ([]leaderboardEntry, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	collection := db.DB.Collection("LeaderboardEntry")
-	cursor, err := collection.Find(ctx, bson.M{})
-	if err != nil {
-		return nil, err
+func NewLeaderboardEntry(username string, score int) *leaderboardEntry {
+	return &leaderboardEntry{
+		Username: username,
+		Score:    score,
 	}
-
-	var scores []leaderboardEntry
-	if err = cursor.All(ctx, &scores); err != nil {
-		return nil, err
-	}
-
-	return scores, nil
 }
 
-func GetLeaderboard() ([]bson.M, error) {
+type leaderboardMessage struct {
+	Type string             `json:"type"`
+	Data []leaderboardEntry `json:"data"`
+}
+
+func GetLeaderboard() ([]leaderboardEntry, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	collection := db.DB.Collection("LeaderboardEntry")
 
-	var entries []bson.M
+	var entries []leaderboardEntry
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
 
-	for cursor.Next(ctx) {
-		var entry bson.M
-		if err := cursor.Decode(&entry); err != nil {
-			return nil, err
-		}
-		entries = append(entries, entry)
-
+	if err = cursor.All(ctx, &entries); err != nil {
+		return nil, err
 	}
+
 	return entries, err
-
 }
 
-func AddScore(entry leaderboardEntry) (*mongo.InsertOneResult, error) {
+func AddScore(entry leaderboardEntry) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	collection := db.DB.Collection("leaderboard")
-	var result bson.M
-	if err := collection.FindOne(ctx, bson.D{{Key: "rank", Value: 10}}).Decode(&result); err != nil {
-		fmt.Fprintf(os.Stderr, "Fetching lowest score failed: %v", err)
-		return nil, err
+	collection := db.DB.Collection("LeaderboardEntry")
+
+	var entries []leaderboardEntry
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return err
 	}
 
-	if result["score"].(int) > entry.Score {
-		return nil, nil
+	if err = cursor.All(ctx, &entries); err != nil {
+		return err
 	}
 
-	return collection.InsertOne(ctx, entry)
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Score < entries[j].Score
+	})
+
+	if entry.Score > entries[0].Score {
+		filter := bson.D{{Key: "username", Value: entries[0].Username}, {Key: "score", Value: entries[0].Score}}
+		if _, err := collection.ReplaceOne(ctx, filter, entry); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func RespondGetLeaderboard() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		leaderboard, err := GetLeaderboard()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		c.JSON(200, leaderboard)
+	}
 }

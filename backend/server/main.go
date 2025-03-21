@@ -5,7 +5,9 @@ import (
 	"Tetris/db/leaderboard"
 	ws "Tetris/internal/websocket"
 	"log"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,14 +17,17 @@ func main() {
 	}
 	hub := ws.NewHub()
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://localhost:3000"}, // Replace with your React app URL
+        AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+        AllowHeaders:     []string{"Origin", "Content-Type"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+        MaxAge:           12 * time.Hour,
+    }))
+
 	router.GET("/ws", ws.WebsocketHandler(hub))
-	router.GET("/scores", func(c *gin.Context) {
-		scores, err := leaderboard.GetScores()
-		if err != nil {
-			c.JSON(500, gin.H{"error": "Failed to fetch scores"})
-			return
-		}
-		c.JSON(200, scores)
-	})
+	router.GET("/leaderboard", leaderboard.RespondGetLeaderboard())
 	router.Run(":8080")
 }

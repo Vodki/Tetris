@@ -1,6 +1,7 @@
 package game
 
 import (
+	"Tetris/db/leaderboard"
 	"Tetris/internal/msg"
 	"encoding/json"
 	"fmt"
@@ -90,7 +91,7 @@ func (g *Engine) Start() {
 		}
 		g.Ticker.Stop()
 		fmt.Fprintf(os.Stderr, "username = %v", g.username)
-		// TODO HERE : Implement the leaderboard system
+		leaderboard.AddScore(*leaderboard.NewLeaderboardEntry(g.username, g.Score))
 		g.reset()
 		log.Print("GAME OVER")
 	}

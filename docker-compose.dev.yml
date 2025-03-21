@@ -14,7 +14,7 @@ services:
       - PORT=8080
       - GIN_MODE=debug
       - MONGODB_URI=mongodb://mongo:27017  # Use Docker service name
-      - MONGODB_DB=Tetris_dev
+      - MONGODB_DB=LeaderBoard
 
     networks:
       - app-network
