@@ -84,6 +84,7 @@ func RespondGetLeaderboard() gin.HandlerFunc {
 			})
 			return
 		}
+		//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.JSON(200, leaderboard)
 	}
 }

@@ -1,11 +1,8 @@
 package websocket
 
 import (
-	"Tetris/db/leaderboard"
 	"Tetris/internal/game"
 	"Tetris/internal/msg"
-	"fmt"
-	"os"
 
 	"net/http"
 
@@ -40,13 +37,6 @@ func WebsocketHandler(hub *Hub) gin.HandlerFunc {
 		go func() {
 			client.Send <- msg
 		}()
-
-		leaderboard, err := leaderboard.GetLeaderboard()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error while fetching leaderboard")
-		} else {
-			fmt.Printf("leaderboard = %v", leaderboard)
-		}
 
 		eng := game.NewEngine(client.GameSend)
 		client.GameRecv = eng.CommandChan

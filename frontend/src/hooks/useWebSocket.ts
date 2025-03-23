@@ -14,7 +14,7 @@ const useWebSocket = (url: string) => {
 
     ws.onmessage = (event) => {
       try {
-        console.log(event.data)
+        //console.log(event.data)
         const message: { type: string; data: string; score: number; level:number; gameOn: boolean } = JSON.parse(event.data);
         
         if (message.type === 'GameUpdate') {
