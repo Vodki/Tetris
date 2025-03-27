@@ -53,48 +53,48 @@
 }
 
 .cell {
-  width: 25px;
-  height: 25px;
+  width: 40px;
+  height: 40px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 
-.color-1 {
-  background-color: #00ffff; /* I-block - Cyan */
+.color-1 { /* I-block - Cyan */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/blue_square.svg');
 }
 
-.color-2 {
-  background-color: #0000ff; /* J-block - Blue */
+.color-2 { /* J-block - Blue */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/dark_blue_square.svg');
 }
 
-.color-3 {
-  background-color: #ff8000; /* L-block - Orange */
+.color-3 { /* L-block - Orange */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/orange_square.svg');
 }
 
-.color-4 {
-  background-color: #ffff00; /* O-block - Yellow */
+.color-4 { /* O-block - Yellow */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/yellow_square.svg');
 }
 
-.color-5 {
-  background-color: #00ff00; /* S-block - Green */
+.color-5 { /* S-block - Green */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/green_square.svg');
 }
 
-.color-6 {
-  background-color: #800080; /* T-block - Purple */
+.color-6 { /* T-block - Purple */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/magenta_square.svg');
 }
 
-.color-7 {
-  background-color: #ff0000; /* Z-block - Red */
+.color-7 { /* Z-block - Red */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: url('assets/red_square.svg');
 }
 
-.color-9 {
-  background-color: #000000; /* Z-block - Red */
-  border: 1px solid rgb(255, 255, 255);
+.color-9 { /* Previsualisation */
+  background-color: #000000;
+  border: 1px solid rgb(255, 255, 255); 
 }

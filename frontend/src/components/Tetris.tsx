@@ -4,27 +4,20 @@ import { createEmptyGrid } from "../utils/gridUtils";
 import { Button } from "./ui/button";
 import { uniqueNamesGenerator, adjectives, colors, animals } from "unique-names-generator";
 import { Input } from "./ui/input";
+import Leaderboard from "./Leaderboard";
+import "./Leaderboard.css"
+import GameStats from "./GameStats";
+import "./GameStats.css"
+import Grid from "./Grid";
 
-const Grid: React.FC<{ grid: number[][] }> = React.memo(({ grid }) => (
-  <div className="grid">
-    {grid.map((row, rowIndex) => (
-      <div key={rowIndex} className="row">
-        {row.map((cell, cellIndex) => (
-          <div
-            key={cellIndex}
-            className={`cell ${cell !== 0 ? `color-${cell}` : ''}`}
-          />
-        ))}
-      </div>
-    ))}
-  </div>
-));
+
 
 
 const Tetris: React.FC = () => {
   const defaultGrid = createEmptyGrid();
   const { grid, sendMessage, score, level, gameOn } = useWebSocket("ws://localhost:8080/ws");
   const [username, setUsername] = useState<string>("")
+  const [leaderboard, setLeaderboard] = useState<Array<{username: string, score: number}>>([]);
   
   const handleGeneratePseudo = () => {
     const generatedName = uniqueNamesGenerator({
@@ -47,17 +40,14 @@ const Tetris: React.FC = () => {
         }
   
         const result: any[] = await response.json();
-  
-        console.log("result = ", result);
-        //setData(result);
+        setLeaderboard(result)
       } catch (error) {
         console.error("Fetch Error:", error);
-      } finally {
       }
     };
   
     fetchData();
-  }, []);
+  }, [gameOn]);
 
   // Always show current grid or default if empty
   const currentGrid = grid && grid.length > 0 ? grid : defaultGrid;
@@ -111,18 +101,19 @@ const Tetris: React.FC = () => {
       alignItems: "center",
       columnGap: "3rem"
     }}>
-      <div>
+      <div className="flex flex-col">
+        <Leaderboard entries={leaderboard} />
         <Input
+          className="border-gray-950"
           placeholder='Username'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           />
         <Button
+          className="my-4"
           onClick={handleGeneratePseudo}>
           Create a random Username
         </Button>
-        <p>level : {level}</p>
-        <p>score : {score}</p>
         <Button
           className='disabled:opacity-50 disabled:cursor-not-allowed'
           disabled={!username.trim() || gameOn}
@@ -131,6 +122,9 @@ const Tetris: React.FC = () => {
         </Button>
       </div>
       <Grid grid={currentGrid} />
+      <div>
+        <GameStats level={level || 0} score={score || 0}/>
+      </div>
     </div>
   );
 };

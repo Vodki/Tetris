@@ -84,6 +84,9 @@ func RespondGetLeaderboard() gin.HandlerFunc {
 			})
 			return
 		}
+		sort.Slice(leaderboard, func(i, j int) bool {
+			return leaderboard[i].Score > leaderboard[j].Score
+		})
 		//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.JSON(200, leaderboard)
 	}

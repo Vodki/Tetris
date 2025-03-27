@@ -40,7 +40,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin     # Root user
+      - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=supersecret
     networks:
       - app-network
@@ -48,11 +48,11 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 1024M  # Increase memory for prod DB
+          memory: 1024M
 
 networks:
   app-network:
     driver: bridge
 
 volumes:
-  mongodb_data
+  mongodb_data:
